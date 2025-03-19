@@ -1,0 +1,6 @@
+torch
+librosa
+transformers
+hydra-core
+omegaconf
+fire
