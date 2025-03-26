@@ -75,10 +75,11 @@ def train(n_epochs, model, dataloader):
         num_batches = len(dataloader)
         for batch in dataloader:
             waves_16k, transcriptions = batch['audio'], batch['transcription']
-            waves_16k = waves_16k.to(device)
+            waves_16k = waves_16k.to(device)            
             waves_16k_lens = torch.tensor([len(w) for w in waves_16k]).to(device)
 
             target_tokens = model.tokenizer(transcriptions, padding=True, return_tensors='pt').input_ids
+            target_tokens = target_tokens.to(device)
             text_lens = torch.tensor(list(map(len, target_tokens)))
             
             with torch. no_grad():
@@ -93,11 +94,14 @@ def train(n_epochs, model, dataloader):
             epoch_loss += s2s_loss.item()
         
         epoch_loss /= num_batches
-        epoch_losses.append[epoch_loss]    
+        epoch_losses.append(epoch_loss          )   
+
+        with open("losses.txt", "a") as file:
+            file.write(f"Epoch {i}: Loss = {epoch_loss}\n")
 
         if i % 10 == 0:
             print(f"Epoch: {i}, Loss: {epoch_loss}")
-            torch.save(model.state_dict(), f"saves_epoch_{i}_{model.pth}")
+            torch.save(model.state_dict(), f"saves_epoch_{i}_model.pth")
             
 model = load_model(model_path, config_path).to(device)
 dataloader = load_dataloader()
