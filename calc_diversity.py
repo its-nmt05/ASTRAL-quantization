@@ -12,7 +12,7 @@ import random
 MODEL_PATH = 'models/cc.vi.300.bin'
 FILE_PATH = 'indices.json'
 model = fasttext.load_model(MODEL_PATH)
-N = 200
+N = 500
 
 
 def preprocess_text(text):

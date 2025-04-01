@@ -62,7 +62,7 @@ def load_dataloader(batch_size=4):
     dataset = load_dataset("doof-ferb/vlsp2020_vinai_100h", split="train")
     dataset = dataset.select(indices) 
     dataset.set_format(type="torch", columns=["audio", "transcription"])
-    return DataLoader(dataset, batch_size=batch_size, collate_fn=collate_fn, indices=indices)
+    return DataLoader(dataset, batch_size=batch_size, collate_fn=collate_fn)
     
 def load_model(model_path, config_path):
     model = init_model(model_path, config_path)
