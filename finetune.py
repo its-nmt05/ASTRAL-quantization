@@ -9,8 +9,13 @@ from hf_utils import load_custom_model_from_hf
 from datasets import load_dataset
 from torch.utils.data import DataLoader
 
+import json
+
 n_epochs = 100
 model_name = "bsq32"
+
+with open('indices.json', 'r') as f: # load top_n diverse indices
+    indices = json.load(f)
 
 HF_REPO_ID = "Plachta/ASTRAL-quantization"
 HF_MODEL_PATH_MAPPINGS = {
@@ -55,9 +60,9 @@ def collate_fn(batch, target_length=160000):  # Set an appropriate length
 
 def load_dataloader(batch_size=4):
     dataset = load_dataset("doof-ferb/vlsp2020_vinai_100h", split="train")
-    dataset = dataset.select(range(100)) 
+    dataset = dataset.select(indices) 
     dataset.set_format(type="torch", columns=["audio", "transcription"])
-    return DataLoader(dataset, batch_size=batch_size, collate_fn=collate_fn)
+    return DataLoader(dataset, batch_size=batch_size, collate_fn=collate_fn, indices=indices)
     
 def load_model(model_path, config_path):
     model = init_model(model_path, config_path)
@@ -94,7 +99,7 @@ def train(n_epochs, model, dataloader):
             epoch_loss += s2s_loss.item()
         
         epoch_loss /= num_batches
-        epoch_losses.append(epoch_loss          )   
+        epoch_losses.append(epoch_loss)   
 
         with open("losses.txt", "a") as file:
             file.write(f"Epoch {i}: Loss = {epoch_loss}\n")
